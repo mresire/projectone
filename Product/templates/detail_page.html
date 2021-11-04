@@ -1,4 +1,5 @@
 {% extends 'base.html'%}
+{% load static %}
 
 {% block new_content %}
     <ul>
@@ -6,7 +7,7 @@
         <li>{{commodity.price}} </li>
         <li>{{commodity.description}} </li>
         <li>{{commodity.is_new}} </li>
-        
+        <img src="{% static 'img/1.png' %}" alt="" height="100">
     </ul>
 
 {% endblock %}
