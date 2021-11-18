@@ -3,8 +3,34 @@ from django.http import JsonResponse
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .models import Task
-from .serializers import TaskSerializer
+from .serializers import TaskSerializer,TaskCreateSerializer
 from rest_framework import status
+
+from .permissions import IsOwnerOrReadOnly
+
+from rest_framework.permissions import (
+    AllowAny,
+    IsAuthenticated,
+    IsAuthenticatedOrReadOnly
+)
+
+
+from rest_framework.filters import (
+    SearchFilter,
+    OrderingFilter,
+)
+
+from rest_framework.generics import (
+    ListAPIView,
+    CreateAPIView,
+    RetrieveAPIView,
+    UpdateAPIView,
+    DestroyAPIView,
+    RetrieveUpdateAPIView,
+    ListCreateAPIView,
+    RetrieveUpdateDestroyAPIView,
+    
+    )
 
 # Create your views here.
 @api_view(['GET'])
@@ -57,6 +83,65 @@ def taskDelete(request,pk):
     task.delete()
 
     return Response('Task deleted successfully')
+
+'''
+Function based view
+'''
+
+class TaskListAPIView(ListAPIView):
+    queryset = Task.objects.all()
+    serializer_class = TaskSerializer
+    filter_backends = [SearchFilter,OrderingFilter]
+    search_fields = ['name','is_completed']
+
+    def get_queryset(self):
+        # qs=Task.objects.filter(user=self.request.user)
+        return self.queryset.filter(user=self.request.user)
+
+
+
+class TaskCreateAPIView(CreateAPIView):
+    queryset = Task.objects.all()
+    serializer_class = TaskCreateSerializer
+    permission_classes =[IsAuthenticated]
+
+    def perform_create(self,serializer):
+        serializer.save(user=self.request.user)
+
+class TaskDetailAPIView(RetrieveAPIView):
+    queryset = Task.objects.all()
+    serializer_class = TaskSerializer
+    lookup_field ='id'
+    lookup_url_kwarg='id'
+
+class TaskUpdateAPIView(RetrieveUpdateAPIView):
+    queryset = Task.objects.all()
+    serializer_class = TaskSerializer
+    lookup_field ='id'
+    lookup_url_kwarg='id'
+    permission_classes=[IsAuthenticatedOrReadOnly,IsOwnerOrReadOnly]
+
+class TaskDeleteAPIView(DestroyAPIView):
+    queryset = Task.objects.all()
+    serializer_class = TaskSerializer
+    lookup_field ='id'
+    lookup_url_kwarg='id'
+
+
+class TaskListCreateAPIView(ListCreateAPIView):
+    queryset = Task.objects.all()
+    serializer_class = TaskSerializer
+
+class TaskDetailUpdateDestroyAPIView(RetrieveUpdateDestroyAPIView):
+    queryset = Task.objects.all()
+    serializer_class = TaskSerializer
+    lookup_field ='id'
+    lookup_url_kwarg='id'
+
+
+
+
+
 
 
 
