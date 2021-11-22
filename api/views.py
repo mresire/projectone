@@ -93,10 +93,11 @@ class TaskListAPIView(ListAPIView):
     serializer_class = TaskSerializer
     filter_backends = [SearchFilter,OrderingFilter]
     search_fields = ['name','is_completed']
+    # permission_classes = [IsAuthenticated]
 
-    def get_queryset(self):
-        # qs=Task.objects.filter(user=self.request.user)
-        return self.queryset.filter(user=self.request.user)
+    # def get_queryset(self):
+    #     # qs=Task.objects.filter(user=self.request.user)
+    #     return self.queryset.filter(user=self.request.user)
 
 
 
