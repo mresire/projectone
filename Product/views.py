@@ -12,6 +12,7 @@ from django.contrib.auth.decorators import login_required
 def home_view(request):
 
     # print(request.user)
+    # raise Exception('New exception')
     user = request.user
     user_data = Commodity.objects.all()
     print(user_data)
